@@ -76,7 +76,8 @@ class ECSConsumption(object):
                     user += int(bucket_billing['total_size'])
 
             logging.debug(users_dict)
-            # client.authentication.logout()
+
+        client.authentication.logout()
         return users_dict
 
 
