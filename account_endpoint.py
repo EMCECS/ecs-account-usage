@@ -2,10 +2,13 @@
 Copyright DELL|EMC
 '''
 
-import os, threading, logging, time
+import os
+import threading
+import logging
+import time
+import begin
 from flask import Flask, Response, request
 from account_usage import ECSConsumption
-import begin
 
 
 logging.basicConfig(level=logging.DEBUG)
