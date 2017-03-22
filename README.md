@@ -1,5 +1,5 @@
 # ecs-account-usage
-Creates a basic report and a Swfit compatible endpoint providing information about the usage of the ECS storage per bucket owner.
+Creates a basic report and a Swift compatible endpoint providing information about the usage of the ECS storage per bucket owner.
 
 ## Usage
 
@@ -27,7 +27,7 @@ python .\account_usage.py
 or:
 
 ```
-python .\account_endpoint.py -e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login -u <your system_role_account_user> -p <password>  -t temp -s https://portal.ecstestdrive.com:9025
+python .\account_endpoint.py -e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login -u <your system_role_account_user> -p <password>  -t temp -s https://swift.ecstestdrive.com
 
 ```
 
