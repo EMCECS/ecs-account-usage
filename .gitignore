@@ -92,3 +92,8 @@ ENV/
 
 .idea
 .vscode
+
+/tmp
+temp
+/temp
+
