@@ -23,6 +23,7 @@ class ECSConsumption(object):
         self.userrname = username
         self.password = password
         self.token_endpoint = token_endpoint
+
         self.ecs_endpoint = '{0}:4443'.format(ecs_endpoint)
         self.request_timeout = request_timeout
         self.verify_ssl = verify_ssl
@@ -76,7 +77,6 @@ class ECSConsumption(object):
                     user += int(bucket_billing['total_size'])
 
             logging.debug(users_dict)
-
         client.authentication.logout()
         return users_dict
 

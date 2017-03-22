@@ -14,6 +14,7 @@ from account_usage import ECSConsumption
 
 logging.basicConfig(level=logging.ERROR)
 
+
 class AccountUsageThread(threading.Thread):
     '''Get the user information, runs a thread to keep it updated
     and provides an endpoint
@@ -45,9 +46,8 @@ class AccountUsageThread(threading.Thread):
             user_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
             self.user_consumption = user_dict
+
             time.sleep(300 & 1000)
-            break  # TODO: remove after debugging
-            time.sleep(60 & 1000)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
@@ -95,6 +95,7 @@ def get(account):
     # resp.data = r.text
     return resp
 
+
 # if __name__ == "__main__":
 if begin.start():
     pass
@@ -113,6 +114,7 @@ def run(username='admin',
     logging.info('Initializing thread to capture usage')
 
     global thread
+
     thread = AccountUsageThread(username,
                                 password,
                                 token_endpoint,
