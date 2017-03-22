@@ -23,7 +23,7 @@ class ECSConsumption(object):
         self.userrname = username
         self.password = password
         self.token_endpoint = token_endpoint
-        self.ecs_endpoint = ecs_endpoint
+        self.ecs_endpoint = '{0}:4443'.format(ecs_endpoint)
         self.request_timeout = request_timeout
         self.verify_ssl = verify_ssl
         self.token_path = token_path
