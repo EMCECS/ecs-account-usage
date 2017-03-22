@@ -106,6 +106,7 @@ def run(username='admin',
         swift_endpoint='https://portal.ecstestdrive.com:9025',
         request_timeout=15,
         verify_ssl=False,
+        endpoint_ssl=True,
         token_path='/tmp'):
     '''
     Creates an endpoint for Swift the provide account usage header X-Account-Bytes-Used.
@@ -129,11 +130,18 @@ def run(username='admin',
     global _verify_ssl
     _verify_ssl = verify_ssl
 
-    # context=('server.crt', 'server.key')
     logging.info('Initializing endpoint')
-    app.run(debug=True,
-            host='0.0.0.0',
-            threaded=True,
-            port=int(app.config['PORT']),
-            ssl_context='adhoc'  # Use context for customer certs and keys
-           )
+    if endpoint_ssl:
+    # context=('server.crt', 'server.key')
+        app.run(debug=True,
+                host='0.0.0.0',
+                threaded=True,
+                port=int(app.config['PORT']),
+                ssl_context='adhoc'  # Use context for customer certs and keys
+               )
+    else:
+        app.run(debug=True,
+                host='0.0.0.0',
+                threaded=True,
+                port=int(app.config['PORT']),
+               )
