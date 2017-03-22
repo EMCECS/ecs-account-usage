@@ -12,7 +12,7 @@ from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
 
 
-logging.basicConfig(level=logging.ERROR)  # show only errors
+logging.basicConfig(level=logging.DEBUG)  # show only errors
 
 
 class ECSConsumption(object):
@@ -50,8 +50,7 @@ class ECSConsumption(object):
 
             # Get all the buckets for the namespace
             try:
-                buckets = client.bucket.get_buckets(namespace_id, limit=1) #  1000)
-                #  req.status.code = requests.codes[302]
+                buckets = client.bucket.list(namespace_id, limit=100) #  1000)
             except ECSClientException:  # Secure buckets dont provide their size
                 logging.warning('Error found in namespace %s\nException: %s\n skipping',
                                 namespace['name'], Exception)
