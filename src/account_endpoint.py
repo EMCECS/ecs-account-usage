@@ -11,7 +11,6 @@ import requests
 from flask import Flask, Response, request
 from account_usage import ECSConsumption
 
-
 logging.basicConfig(level=logging.ERROR)
 
 
@@ -53,7 +52,7 @@ class AccountUsageThread(threading.Thread):
         '''Returns thhe current user consumption to the main threading'''
         return self.user_consumption
 
-# Instantiate and configure Flask
+# Instantiate and configure endpoint
 app = Flask(__name__)
 app.config['PORT'] = os.getenv('PORT', 9025)
 
@@ -70,12 +69,14 @@ def head(account):
         return 'error'
     else:
         resp = Response(r.content, r.status_code)
+
         newheader = {}
         for k, v in r.headers.items():
             newheader[k] = v
 
         newheader['X-Account-Bytes-Used'] = int(users_dic[account]) * (1024 * 1024 * 1024)
         resp.headers = newheader
+
         return resp
 
 @app.route('/v1/<account>', methods=['GET'])
@@ -86,6 +87,7 @@ def get(account):
                      headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
     resp = Response(r.content, r.status_code)
+
     newheader = {}
     for k, v in r.headers.items():
         newheader[k] = v
