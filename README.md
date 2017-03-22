@@ -10,7 +10,7 @@ Creates a basic report and a Swift compatible endpoint providing information abo
 ### Basic Report:
 use:
 
- ```python .\account_usage.py -u <your system_role_account_user```
+ ```python .\account_usage.py -u <your system_role_account_user>```
 
 or:
 
