@@ -76,9 +76,6 @@ def head(account):
 
         newheader['X-Account-Bytes-Used'] = int(users_dic[account]) * (1024 * 1024 * 1024)
         resp.headers = newheader
-
-        print('>>> header appended')
-        print(resp.headers)
         return resp
 
 @app.route('/v1/<account>', methods=['GET'])
