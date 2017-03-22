@@ -61,7 +61,7 @@ app.config['PORT'] = os.getenv('PORT', 9025)
 @app.route('/v1/<account>', methods=['HEAD'])
 def head(account):
     x_auth_token = request.headers.get('X-Auth-Token')
-    r = requests.head('{0}:9025/v1/{1}'.format(_ecs_endpoint, account),
+    r = requests.head('{0}/v1/{1}'.format(_swift_endpoint, account),
                       headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
     users_dic = thread.get_user_consumption()  # return users account info
@@ -82,7 +82,7 @@ def head(account):
 def get(account):
     x_auth_token = request.headers.get('X-Auth-Token')
 
-    r = requests.get('{0}:9025/v1/{1}'.format(_ecs_endpoint, account),
+    r = requests.get('{0}/v1/{1}'.format(_swift_endpoint, account),
                      headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
     resp = Response(r.content, r.status_code)
@@ -90,9 +90,7 @@ def get(account):
     for k, v in r.headers.items():
         newheader[k] = v
     resp.headers = newheader
-    # resp = Response('')
-    # resp.headers = r.headers
-    # resp.data = r.text
+
     return resp
 
 
@@ -105,6 +103,7 @@ def run(username='admin',
         password='password',
         token_endpoint='https://portal.ecstestdrive.com/login',
         ecs_endpoint='https://portal.ecstestdrive.com',
+        swift_endpoint='https://portal.ecstestdrive.com:9025',
         request_timeout=15,
         verify_ssl=False,
         token_path='/tmp'):
@@ -124,8 +123,8 @@ def run(username='admin',
                                 token_path)
     thread.start()
 
-    global _ecs_endpoint
-    _ecs_endpoint = ecs_endpoint
+    global _swift_endpoint
+    _swift_endpoint = swift_endpoint
 
     global _verify_ssl
     _verify_ssl = verify_ssl
