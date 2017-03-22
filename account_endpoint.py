@@ -12,7 +12,7 @@ from flask import Flask, Response, request
 from account_usage import ECSConsumption
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 class AccountUsageThread(threading.Thread):
     '''Get the user information, runs a thread to keep it updated
@@ -37,7 +37,7 @@ class AccountUsageThread(threading.Thread):
                                    verify_ssl,
                                    token_path)
 
-        self.user_consumption = {}   # Initate the dict that stores the usage info
+        self.user_consumption = {}  # Initate the dict that stores the usage info
 
     def run(self):
         while True:
@@ -47,11 +47,11 @@ class AccountUsageThread(threading.Thread):
             self.user_consumption = user_dict
             time.sleep(300 & 1000)
             break  # TODO: remove after debugging
+            time.sleep(60 & 1000)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
         return self.user_consumption
-
 
 # Instantiate and configure Flask
 app = Flask(__name__)
@@ -81,7 +81,7 @@ def head(account):
 @app.route('/v1/<account>', methods=['GET'])
 def get(account):
     x_auth_token = request.headers.get('X-Auth-Token')
-    
+
     r = requests.get('{0}:9025/v1/{1}'.format(_ecs_endpoint, account),
                      headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
@@ -110,8 +110,6 @@ def run(username='admin',
     '''
     Creates an endpoint for Swift the provide account usage header X-Account-Bytes-Used.
     '''
-    # AccountEndpoint()
-
     logging.info('Initializing thread to capture usage')
 
     global thread
