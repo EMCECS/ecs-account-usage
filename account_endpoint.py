@@ -2,13 +2,18 @@
 Copyright DELL|EMC
 '''
 
-import os, threading, logging, time
+import os
+import threading
+import logging
+import time
+import begin
+import requests
 from flask import Flask, Response, request
 from account_usage import ECSConsumption
-import begin
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
+
 
 class AccountUsageThread(threading.Thread):
     '''Get the user information, runs a thread to keep it updated
@@ -41,35 +46,54 @@ class AccountUsageThread(threading.Thread):
             user_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
             self.user_consumption = user_dict
-            time.sleep(60 & 1000)
+
+            time.sleep(300 & 1000)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
         return self.user_consumption
 
-# Instantiate Flask
+# Instantiate and configure Flask
 app = Flask(__name__)
+app.config['PORT'] = os.getenv('PORT', 9025)
 
-# Configure the app.config using the environmental variables otherwise use defaults
-app.config['PORT'] = os.getenv('PORT', 5000)
-
-# Global Thread
-global thread
 
 @app.route('/v1/<account>', methods=['HEAD'])
-def get(account):
+def head(account):
     x_auth_token = request.headers.get('X-Auth-Token')
-    # TODO: add the Swift request that will be appended to the account usage response
+    r = requests.head('{0}:9025/v1/{1}'.format(_ecs_endpoint, account),
+                      headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
-    '''returns the user account information'''
-    users_dic = thread.get_user_consumption()
-    user = users_dic[account]
+    users_dic = thread.get_user_consumption()  # return users account info
+    user = users_dic.get(account)
     if user is None:
         return 'error'
     else:
-        resp = Response('')
-        resp.headers['X-Account-Bytes-Used'] = int(int(user) * (1024 * 1024 * 1024))
+        resp = Response(r.content, r.status_code)
+        newheader = {}
+        for k, v in r.headers.items():
+            newheader[k] = v
+
+        newheader['X-Account-Bytes-Used'] = int(users_dic[account]) * (1024 * 1024 * 1024)
+        resp.headers = newheader
         return resp
+
+@app.route('/v1/<account>', methods=['GET'])
+def get(account):
+    x_auth_token = request.headers.get('X-Auth-Token')
+
+    r = requests.get('{0}:9025/v1/{1}'.format(_ecs_endpoint, account),
+                     headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
+
+    resp = Response(r.content, r.status_code)
+    newheader = {}
+    for k, v in r.headers.items():
+        newheader[k] = v
+    resp.headers = newheader
+    # resp = Response('')
+    # resp.headers = r.headers
+    # resp.data = r.text
+    return resp
 
 
 # if __name__ == "__main__":
@@ -87,9 +111,10 @@ def run(username='admin',
     '''
     Creates an endpoint for Swift the provide account usage header X-Account-Bytes-Used.
     '''
-    # AccountEndpoint()
-
     logging.info('Initializing thread to capture usage')
+
+    global thread
+
     thread = AccountUsageThread(username,
                                 password,
                                 token_endpoint,
@@ -99,6 +124,11 @@ def run(username='admin',
                                 token_path)
     thread.start()
 
+    global _ecs_endpoint
+    _ecs_endpoint = ecs_endpoint
+
+    global _verify_ssl
+    _verify_ssl = verify_ssl
 
     # context=('server.crt', 'server.key')
     logging.info('Initializing endpoint')

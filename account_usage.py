@@ -12,7 +12,7 @@ from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
 
 
-logging.basicConfig(level=logging.DEBUG)  # show only errors
+logging.basicConfig(level=logging.ERROR)  # show only errors
 
 
 class ECSConsumption(object):
@@ -23,7 +23,8 @@ class ECSConsumption(object):
         self.userrname = username
         self.password = password
         self.token_endpoint = token_endpoint
-        self.ecs_endpoint = ecs_endpoint
+
+        self.ecs_endpoint = '{0}:4443'.format(ecs_endpoint)
         self.request_timeout = request_timeout
         self.verify_ssl = verify_ssl
         self.token_path = token_path
@@ -76,7 +77,7 @@ class ECSConsumption(object):
                     user += int(bucket_billing['total_size'])
 
             logging.debug(users_dict)
-            # client.authentication.logout()
+        client.authentication.logout()
         return users_dict
 
 
