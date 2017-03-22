@@ -8,9 +8,6 @@ import logging
 import getpass
 import begin
 
-
-sys.path.append('..//python-ecsclient')
-
 from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
 
