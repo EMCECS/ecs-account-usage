@@ -24,7 +24,7 @@ class ECSConsumption(object):
         self.password = password
         self.token_endpoint = token_endpoint
 
-        self.ecs_endpoint = '{0}:4443'.format(ecs_endpoint)
+        self.ecs_endpoint = ecs_endpoint
         self.request_timeout = request_timeout
         self.verify_ssl = verify_ssl
         self.token_path = token_path
@@ -50,16 +50,13 @@ class ECSConsumption(object):
 
             # Get all the buckets for the namespace
             try:
-                buckets = client.bucket.get_buckets(namespace_id, limit=1) #  1000)
-                #  req.status.code = requests.codes[302]
+                buckets = client.bucket.list(namespace_id, limit=10) #  1000)
             except ECSClientException:  # Secure buckets dont provide their size
                 logging.warning('Error found in namespace %s\nException: %s\n skipping',
                                 namespace['name'], Exception)
                 continue
 
             for bucket in buckets['object_bucket']:
-                sys.stdout.write(".")  # These two lines privde a visual cue to the user
-                sys.stdout.flush()
                 bucket_name = bucket['name']
 
                 try:
