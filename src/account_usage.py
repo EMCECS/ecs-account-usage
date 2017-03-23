@@ -2,7 +2,6 @@
 Copyright Dell|EMC
 This application provide a list of users in ECS sorted by their usage of the storage syste
 '''
-import sys
 import operator
 import logging
 import getpass
@@ -50,11 +49,7 @@ class ECSConsumption(object):
 
             # Get all the buckets for the namespace
             try:
-<<<<<<< HEAD:src/account_usage.py
                 buckets = client.bucket.list(namespace_id, limit=10) #  1000)
-=======
-                buckets = client.bucket.list(namespace_id, limit=100) #  1000)
->>>>>>> refs/remotes/origin/master:account_usage.py
             except ECSClientException:  # Secure buckets dont provide their size
                 logging.warning('Error found in namespace %s\nException: %s\n skipping',
                                 namespace['name'], Exception)
