@@ -54,7 +54,7 @@ class AccountUsageThread(threading.Thread):
 
 # Instantiate and configure endpoint
 app = Flask(__name__)
-app.config['PORT'] = os.getenv('PORT', 9025)
+# app.config['PORT'] = os.getenv('PORT', 9025)
 
 
 @app.route('/v1/<account>', methods=['HEAD'])
@@ -109,6 +109,7 @@ def run(username='admin',
         request_timeout=15,
         verify_ssl=False,
         endpoint_ssl=True,
+        port=9025,
         token_path='/tmp'):
     '''
     Creates an endpoint for Swift the provide account usage header X-Account-Bytes-Used.
@@ -138,12 +139,12 @@ def run(username='admin',
         app.run(debug=True,
                 host='0.0.0.0',
                 threaded=True,
-                port=int(app.config['PORT']),
+                port=int(port),
                 ssl_context='adhoc'  # Use context for customer certs and keys
                )
     else:
         app.run(debug=True,
                 host='0.0.0.0',
                 threaded=True,
-                port=int(app.config['PORT']),
+                port=int(port),
                )
