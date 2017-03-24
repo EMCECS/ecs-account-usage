@@ -64,20 +64,20 @@ def head(account):
                       headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
     users_dic = thread.get_user_consumption()  # return users account info
+
+    resp = Response(r.content, r.status_code)
+
+    newheader = {}
+    for k, v in r.headers.items():
+        newheader[k] = v
+
     user = users_dic.get(account)
-    if user is None:
-        return 'error'
-    else:
-        resp = Response(r.content, r.status_code)
-
-        newheader = {}
-        for k, v in r.headers.items():
-            newheader[k] = v
-
+    if user is not None:    
         newheader['X-Account-Bytes-Used'] = int(users_dic[account]) * (1024 * 1024 * 1024)
-        resp.headers = newheader
 
-        return resp
+    resp.headers = newheader
+
+    return resp
 
 @app.route('/v1/<account>', methods=['GET'])
 def get(account):
