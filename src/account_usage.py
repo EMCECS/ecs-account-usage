@@ -11,7 +11,7 @@ from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
 
 
-logging.basicConfig(level=logging.DEBUG)  # show only errors
+logging.basicConfig(level=logging.ERROR)  # show only errors
 
 
 class ECSConsumption(object):
