@@ -42,7 +42,7 @@ class AccountUsageThread(threading.Thread):
         with shelve.open('db_data') as db_data:
             for key, value in db_data.items():
                 self.user_consumption[key] = value  # Load the data locally
-                logging.debug('Loading saved data')
+            logging.debug('Loading saved data')
             logging.debug(list(db_data.keys()))
 
     def run(self):
