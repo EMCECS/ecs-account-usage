@@ -97,3 +97,4 @@ ENV/
 temp
 temp.txt
 /temp
+db_data*

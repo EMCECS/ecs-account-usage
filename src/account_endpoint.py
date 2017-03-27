@@ -8,6 +8,7 @@ import logging
 import time
 import begin
 import requests
+import shelve
 from flask import Flask, Response, request
 from account_usage import ECSConsumption
 
@@ -37,7 +38,12 @@ class AccountUsageThread(threading.Thread):
                                    verify_ssl,
                                    token_path)
 
-        self.user_consumption = {}  # Initate the dict that stores the usage info
+        with shelve.open('db_data') as db_data:
+            if db_data is None:
+                self.user_consumption = {}  # Initate the dict that stores the usage info
+            else:
+                self.user_consumption = db_data.items  # Load the data locally
+                logging.debug('Loading saved data')
 
     def run(self):
         while True:
@@ -45,7 +51,10 @@ class AccountUsageThread(threading.Thread):
             user_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
             self.user_consumption = user_dict
-
+            with shelve.open('db_data') as db_data:
+                for k, val in user_dict.items():
+                    db_data[k] = val
+                logging.debug('Saved data to disk...')
             time.sleep(300 & 1000)
 
     def get_user_consumption(self):
