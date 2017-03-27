@@ -38,12 +38,12 @@ class AccountUsageThread(threading.Thread):
                                    verify_ssl,
                                    token_path)
 
+        self.user_consumption = {}
         with shelve.open('db_data') as db_data:
-            if db_data is None:
-                self.user_consumption = {}  # Initate the dict that stores the usage info
-            else:
-                self.user_consumption = db_data.items()  # Load the data locally
+            for key, value in db_data.items():
+                self.user_consumption[key] = value  # Load the data locally
                 logging.debug('Loading saved data')
+            logging.debug(list(db_data.keys()))
 
     def run(self):
         while True:
@@ -55,7 +55,7 @@ class AccountUsageThread(threading.Thread):
                 for k, val in user_dict.items():
                     db_data[k] = val
                 logging.debug('Saved data to disk...')
-            time.sleep(300 & 1000)
+            time.sleep(300 * 1000)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
