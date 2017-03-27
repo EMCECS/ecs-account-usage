@@ -42,7 +42,7 @@ class AccountUsageThread(threading.Thread):
             if db_data is None:
                 self.user_consumption = {}  # Initate the dict that stores the usage info
             else:
-                self.user_consumption = db_data.items  # Load the data locally
+                self.user_consumption = db_data.items()  # Load the data locally
                 logging.debug('Loading saved data')
 
     def run(self):
