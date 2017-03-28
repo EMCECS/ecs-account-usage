@@ -51,7 +51,7 @@ class AccountUsageThread(threading.Thread):
             user_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
             self.user_consumption = user_dict
-            with shelve.open('db_data') as db_data:
+            with shelve.open('db_data', writeback=True) as db_data:
                 for k, val in user_dict.items():
                     db_data[k] = val
                 logging.debug('Saved data to disk...')

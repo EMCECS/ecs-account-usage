@@ -46,34 +46,12 @@ class ECSConsumption(object):
 
         for namespace in namespaces['namespace']:
             namespace_id = namespace['id']
+            namespace_name = namespace['name']
             logging.debug(namespace_id)
 
-            # Get all the buckets for the namespace
-            try:
-                buckets = client.bucket.list(namespace_id, limit=10) #  1000)
-            except ECSClientException:  # Secure buckets dont provide their size
-                logging.warning('Error found in namespace %s\nException: %s\n skipping',
-                                namespace['name'], Exception)
-                continue
-
-            for bucket in buckets['object_bucket']:
-                bucket_name = bucket['name']
-
-                try:
-                    # Provide the GB consumption of the bucket been interated
-                    bucket_billing = client.billing.get_bucket_billing_info(bucket_name, namespace_id)
-                except ECSClientException:  # Secure buckets dont provide their size
-                    logging.warning('Error found in namespace %s bucket %s\nException: %s\n skipping',
-                                    bucket_name, namespace['name'], Exception)
-                    continue
-
-                # Check the the current bucket's owner is registered
-                user = users_dict.get(bucket['owner'])
-                if user is None:  # If not owner not store, store it.
-                    users_dict[bucket['owner']] = int(bucket_billing['total_size'])
-                else:  # If owner is found add up the new bucket size.
-                    user += int(bucket_billing['total_size'])
-
+            namespace_info = client.billing.get_namespace_billing_info(namespace_id)
+            users_dict[namespace_name] = int(namespace_info['total_size'])
+            
             logging.debug(users_dict)
         client.authentication.logout()
 
