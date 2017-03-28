@@ -6,6 +6,7 @@ import operator
 import logging
 import getpass
 import begin
+import os
 
 from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
@@ -74,6 +75,10 @@ class ECSConsumption(object):
 
             logging.debug(users_dict)
         client.authentication.logout()
+
+        if os.path.exists(self.token_path): #  clean old token
+            os.remove(self.token_path)
+
         return users_dict
 
 
