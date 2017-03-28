@@ -65,6 +65,7 @@ class ECSConsumption(object):
                 except ECSClientException:  # Secure buckets dont provide their size
                     logging.warning('Error found in namespace %s bucket %s\nException: %s\n skipping',
                                     bucket_name, namespace['name'], Exception)
+                    continue
 
                 # Check the the current bucket's owner is registered
                 user = users_dict.get(bucket['owner'])
