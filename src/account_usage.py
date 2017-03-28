@@ -20,7 +20,7 @@ class ECSConsumption(object):
 
     def __init__(self, username, password, token_endpoint, ecs_endpoint,
                  request_timeout, verify_ssl, token_path):
-        self.userrname = username
+        self.username = username
         self.password = password
         self.token_endpoint = token_endpoint
 
@@ -32,7 +32,7 @@ class ECSConsumption(object):
     def get_user_consumption(self):
         '''Get the users account usage information'''
 
-        client = Client(username=self.userrname,
+        client = Client(username=self.username,
                         password=self.password,
                         token_endpoint=self.token_endpoint,
                         ecs_endpoint=self.ecs_endpoint,
