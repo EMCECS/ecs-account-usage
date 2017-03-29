@@ -6,13 +6,18 @@ import os
 import threading
 import logging
 import time
+import shelve
 import begin
 import requests
-import shelve
 from flask import Flask, Response, request
 from account_usage import ECSConsumption
 
-logging.basicConfig(level=logging.ERROR)
+#Logging parameters
+logger = logging.getLogger('account_endpoint')
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('account_endpoint.log','w')
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 class AccountUsageThread(threading.Thread):
@@ -29,7 +34,7 @@ class AccountUsageThread(threading.Thread):
                  verify_ssl,
                  token_path):
         threading.Thread.__init__(self)
-        logging.info('Initializing thread')
+        logger.info('Initializing thread')
         self.ecsc = ECSConsumption(username,
                                    password,
                                    token_endpoint,
@@ -42,20 +47,24 @@ class AccountUsageThread(threading.Thread):
         with shelve.open('db_data') as db_data:
             for key, value in db_data.items():
                 self.user_consumption[key] = value  # Load the data locally
-            logging.debug('Loading saved data')
-            logging.debug(list(db_data.keys()))
+            logger.debug('Loading saved data')
+            logger.debug(list(db_data.keys()))
 
     def run(self):
         while True:
-            logging.info('Running forever thread')
+            logger.info('Running forever thread')
             user_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
-            self.user_consumption = user_dict
+            with  threading.Lock():
+                self.user_consumption = {}
+                for key, val in user_dict.items():
+                    self.user_consumption[key] = val
+                # self.user_consumption = user_dict
             with shelve.open('db_data', writeback=True) as db_data:
                 for k, val in user_dict.items():
                     db_data[k] = val
-                logging.debug('Saved data to disk...')
-            time.sleep(300 * 1000)
+                logger.debug('Saved data to disk...')
+            time.sleep(30)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
@@ -123,7 +132,7 @@ def run(username='admin',
     '''
     Creates an endpoint for Swift the provide account usage header X-Account-Bytes-Used.
     '''
-    logging.info('Initializing thread to capture usage')
+    logger.info('Initializing thread to capture usage')
 
     global thread
 
@@ -142,7 +151,7 @@ def run(username='admin',
     global _verify_ssl
     _verify_ssl = verify_ssl
 
-    logging.info('Initializing endpoint')
+    logger.info('Initializing endpoint')
     if endpoint_ssl:
     # context=('server.crt', 'server.key')
         app.run(debug=True,

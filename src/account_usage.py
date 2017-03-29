@@ -1,18 +1,22 @@
 '''
 Copyright Dell|EMC
-This application provide a list of users in ECS sorted by their usage of the storage syste
+This application provide a list of namespace in ECS sorted by their usage of the storage system.
 '''
 import operator
 import logging
 import getpass
+import sys
 import begin
-import os
 
 from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client
 
-
-logging.basicConfig(level=logging.ERROR)  # show only errors
+#Logging parameters
+logger = logging.getLogger('account_usage')
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('account_usage.log','w')
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 class ECSConsumption(object):
@@ -47,16 +51,21 @@ class ECSConsumption(object):
         for namespace in namespaces['namespace']:
             namespace_id = namespace['id']
             namespace_name = namespace['name']
-            logging.debug(namespace_id)
+            logger.debug(namespace_id)
 
-            namespace_info = client.billing.get_namespace_billing_info(namespace_id)
-            users_dict[namespace_name] = int(namespace_info['total_size'])
-            
-            logging.debug(users_dict)
+            try:
+                namespace_info = client.billing.get_namespace_billing_info(namespace_id)
+                users_dict[namespace_name] = int(namespace_info['total_size'])
+            except ECSClientException:  # Secure buckets dont provide their size
+                logger.warning('Error found in namespace: %s\nException: %s\n skipping',
+                                namespace['name'], Exception)
+                continue
+
+            logger.debug(users_dict)
         client.authentication.logout()
 
-        if os.path.exists(self.token_path): #  clean old token
-            os.remove(self.token_path)
+        # if os.path.exists(self.token_path): #  clean old token
+        #     os.remove(self.token_path)
 
         return users_dict
 
