@@ -15,7 +15,7 @@ from ecsclient.client import Client
 logger = logging.getLogger('account_usage')
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler('account_usage.log','w')
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.ERROR)
 logger.addHandler(fh)
 
 

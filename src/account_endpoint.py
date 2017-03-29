@@ -16,7 +16,7 @@ from account_usage import ECSConsumption
 logger = logging.getLogger('account_endpoint')
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler('account_endpoint.log','w')
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.ERROR)
 logger.addHandler(fh)
 
 
