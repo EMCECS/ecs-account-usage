@@ -99,3 +99,4 @@ temp.txt
 /temp
 db_data*
 /src/db_data*
+/src/*.log
