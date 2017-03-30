@@ -5,7 +5,6 @@ This application provide a list of namespace in ECS sorted by their usage of the
 import operator
 import logging
 import getpass
-import sys
 import begin
 
 from ecsclient.common.exceptions import ECSClientException
@@ -63,9 +62,6 @@ class ECSConsumption(object):
 
             logger.debug(users_dict)
         client.authentication.logout()
-
-        # if os.path.exists(self.token_path): #  clean old token
-        #     os.remove(self.token_path)
 
         return users_dict
 
