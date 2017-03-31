@@ -45,7 +45,8 @@ class ECSConsumption(object):
 
 
         namespaces = client.namespace.list()  # Get all the namespaces in the system
-        users_dict = {}
+        size_dict = {}
+        quota_dict = {}
 
         for namespace in namespaces['namespace']:
             namespace_id = namespace['id']
@@ -54,16 +55,19 @@ class ECSConsumption(object):
 
             try:
                 namespace_info = client.billing.get_namespace_billing_info(namespace_id)
-                users_dict[namespace_name] = int(namespace_info['total_size'])
+                size_dict[namespace_name] = int(namespace_info['total_size'])
+                quota_info = client.namespace.get_namespace_quota(namespace_id)
+                quota_dict[namespace_name] = int(quota_info['blockSize'])
             except ECSClientException:  # Secure buckets dont provide their size
                 logger.warning('Error found in namespace: %s\nException: %s\n skipping',
-                                namespace['name'], Exception)
+                               namespace['name'], Exception)
                 continue
 
-            logger.debug(users_dict)
+            logger.debug(size_dict)
+            logger.debug(quota_dict)
         client.authentication.logout()
 
-        return users_dict
+        return size_dict, quota_dict
 
 
 # if __name__ == "__main__":

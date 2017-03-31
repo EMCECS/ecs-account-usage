@@ -44,31 +44,43 @@ class AccountUsageThread(threading.Thread):
                                    token_path)
 
         self.user_consumption = {}
-        with shelve.open('db_data') as db_data:
-            for key, value in db_data.items():
-                self.user_consumption[key] = value  # Load the data locally
-            logger.debug('Loading saved data')
-            logger.debug(list(db_data.keys()))
+        self.user_quota = {}
+        try:
+            with shelve.open('db_data') as db_data:
+                for key, value in db_data['size'].items():
+                    self.user_consumption[key] = value  # Load the data locally
+                for key, value in db_data['quota'].items():
+                    self.user_quota[key] = value  # Load the data locally
+                logger.debug('Loading saved data')
+                logger.debug(list(db_data['size'].keys()))
+        except:
+            logger.debug('No data in data file found')
 
     def run(self):
         while True:
             logger.info('Running forever thread')
-            user_dict = self.ecsc.get_user_consumption()
+            user_dict, quota_dict = self.ecsc.get_user_consumption()
             # Once data is extracted replace info with the new info.
             with  threading.Lock():
                 self.user_consumption = {}
+                self.user_quota = {}
                 for key, val in user_dict.items():
                     self.user_consumption[key] = val
-                # self.user_consumption = user_dict
+                for key, val in quota_dict.items():
+                    self.user_quota[key] = val
             with shelve.open('db_data', writeback=True) as db_data:
+                db_data['size'] = {}
+                db_data['quota'] = {}
                 for k, val in user_dict.items():
-                    db_data[k] = val
+                    db_data['size'][k] = val
+                for k, val in quota_dict.items():
+                    db_data['quota'][k] = val
                 logger.debug('Saved data to disk...')
             time.sleep(30)
 
     def get_user_consumption(self):
         '''Returns thhe current user consumption to the main threading'''
-        return self.user_consumption
+        return self.user_consumption, self.user_quota
 
 # Instantiate and configure endpoint
 app = Flask(__name__)
@@ -81,17 +93,19 @@ def head(account):
     r = requests.head('{0}/v1/{1}'.format(_swift_endpoint, account),
                       headers={'X-Auth-Token':x_auth_token}, verify=_verify_ssl)
 
-    users_dic = thread.get_user_consumption()  # return users account info
+    users_dic, quota_dic = thread.get_user_consumption()  # return users account info
 
     resp = Response(r.content, r.status_code)
 
     newheader = {}
-    for k, v in r.headers.items():
-        newheader[k] = v
+    for k, val in r.headers.items():
+        newheader[k] = val
 
     user = users_dic.get(account)
-    if user is not None:    
+    quota = quota_dic.get(account)
+    if user is not None and quota is not None:
         newheader['X-Account-Bytes-Used'] = int(users_dic[account]) * (1024 * 1024 * 1024)
+        newheader['X-Account-Meta-Quota-Bytes'] = -1 if quota_dic[account] == -1 else int(quota_dic[account]) * (1024 * 1024 * 1024)
 
     resp.headers = newheader
 
