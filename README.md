@@ -36,3 +36,17 @@ python .\account_endpoint.py -e https://portal.ecstestdrive.com --token-endpoint
 
  The token used after a sucessful login is saved in /tmp.  If you are using Windows you need to use the '-t c:\temp' to store the file in c:\temp
 
+If you are planning to use SSL here is a good reference on how to generate a self-sign certificte
+https://help.ubuntu.com/lts/serverguide/certificates-and-security.html
+
+If you run into trouble installing the cryptographic library you may need to install the development tools for Python by running the following commmand:
+
+Ubuntu:
+```
+$ sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+```
+RHEL or Fedora:
+```
+$ sudo yum install gcc libffi-devel python-devel openssl-devel
+```
+
