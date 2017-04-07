@@ -89,11 +89,11 @@ def run(username='admin',
     if password is 'password':
         password = getpass.getpass(prompt='Password: ', stream=None)
 
-    ecs = ECSConsumption(username, password, token_endpoint, ecs_endpoint, request_timeout,
-                         verify_ssl, token_path).get_user_consumption()
+    user_dict, quota_dict = ECSConsumption(username, password, token_endpoint, ecs_endpoint, request_timeout,
+                                           verify_ssl, token_path).get_user_consumption()
 
     # Display users and utilization
     print('\n{0:50} {1:5} GB'.format('users', 'consumption'))
-    for key, value in sorted(ecs.items(), key=operator.itemgetter(1)):
+    for key, value in sorted(user_dict.items(), key=operator.itemgetter(1)):
         print('{0:50} {1:>5} GB'.format(key, value))
 
