@@ -15,11 +15,7 @@ use:
 or:
 
 ```
-python3 ./account_usage.py \
--e https://portal.ecstestdrive.com \
---token-endpoint https://portal.ecstestdrive.com/login \
--u <your system_role_account_user> -p <password>  \
--t temp.txt
+python3 ./account_usage.py -e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login -u <your system_role_account_user> -p <password> -t temp.txt
 ```
 
  ### Launch the endpoint
@@ -30,16 +26,9 @@ python3 ./account_usage.py \
 or:
 
 ```
-python3 ./account_endpoint.py \
--e https://portal.ecstestdrive.com \
---token-endpoint https://portal.ecstestdrive.com/login \
---username <your system_role_account_user> --password <password>  \
--t temp.txt -s https://swift.ecstestdrive.com \
---no-endpoint-ssl \
---port 5000
+python3 ./account_endpoint.py -e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login --username <your system_role_account_user> --password <password> -t temp.txt -s https://swift.ecstestdrive.com --no-endpoint-ssl --port 5000
 
 ```
-
 
  ## Notes
 
