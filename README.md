@@ -5,29 +5,38 @@ Creates a basic report and a Swift compatible endpoint providing information abo
 
 ### Get the help menu:
 
-```python ./account_usage.py --help```
+```python3 ./account_usage.py --help```
 
 ### Basic Report:
 use:
 
- ```python .\account_usage.py -u <your system_role_account_user>```
+ ```python3 ./account_usage.py -u <your system_role_account_user>```
 
 or:
 
 ```
-python .\account_usage.py
--e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login -u <your system_role_account_user> -p <password>  -t temp.txt
+python3 ./account_usage.py \
+-e https://portal.ecstestdrive.com \
+--token-endpoint https://portal.ecstestdrive.com/login \
+-u <your system_role_account_user> -p <password>  \
+-t temp.txt
 ```
 
  ### Launch the endpoint
  use:
 
- ```python .\account_endpoint.py -u <your system_role_account_user>```
+ ```python3 ./account_endpoint.py -u <your system_role_account_user>```
 
 or:
 
 ```
-python .\account_endpoint.py -e https://portal.ecstestdrive.com --token-endpoint https://portal.ecstestdrive.com/login -u <your system_role_account_user> -p <password>  -t temp -s https://swift.ecstestdrive.com
+python3 ./account_endpoint.py \
+-e https://portal.ecstestdrive.com \
+--token-endpoint https://portal.ecstestdrive.com/login \
+--username <your system_role_account_user> --password <password>  \
+-t temp.txt -s https://swift.ecstestdrive.com \
+--no-endpoint-ssl \
+--port 5000
 
 ```
 
